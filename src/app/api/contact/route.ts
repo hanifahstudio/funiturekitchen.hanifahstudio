@@ -25,16 +25,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const saved = await db.contactMessage.create({
-      data: {
-        name: name.trim(),
-        email: email.trim(),
-        phone: typeof phone === "string" ? phone.trim() : null,
-        message: message.trim(),
-      },
-    });
+    const enquiry = {
+      name: name.trim(),
+      email: email.trim(),
+      phone: typeof phone === "string" ? phone.trim() : null,
+      message: message.trim(),
+    };
 
-    return NextResponse.json({ ok: true, id: saved.id });
+    let savedId: string | number | null = null;
+    try {
+      const saved = await db.contactMessage.create({ data: enquiry });
+      savedId = saved.id;
+    } catch (storeErr) {
+      // On serverless hosting (e.g. Netlify) there is no persistent SQLite
+      // database. Keep the form working by logging the enquiry instead.
+      console.log("contact enquiry (not persisted):", enquiry);
+    }
+
+    return NextResponse.json({ ok: true, id: savedId });
   } catch (err) {
     console.error("contact POST error:", err);
     return NextResponse.json(
