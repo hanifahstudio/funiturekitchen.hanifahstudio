@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,11 +34,12 @@ export async function POST(req: NextRequest) {
 
     let savedId: string | number | null = null;
     try {
-      const saved = await db.contactMessage.create({ data: enquiry });
+      const saved = await getDb().contactMessage.create({ data: enquiry });
       savedId = saved.id;
     } catch (storeErr) {
-      // On serverless hosting (e.g. Netlify) there is no persistent SQLite
-      // database. Keep the form working by logging the enquiry instead.
+      // On serverless hosting (e.g. Cloudflare Workers) there is no
+      // persistent SQLite database. Keep the form working by logging the
+      // enquiry instead (visible in the Worker logs on the dashboard).
       console.log("contact enquiry (not persisted):", enquiry);
     }
 

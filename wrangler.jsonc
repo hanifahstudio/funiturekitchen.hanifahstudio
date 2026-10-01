@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "woodora-kitchens",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2024-12-30",
+  // Required so the Next.js server can run in the Workers runtime
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Keeps Worker logs in the Cloudflare dashboard (contact enquiries that
+  // cannot reach a database are recorded here)
+  "observability": {
+    "enabled": true
+  },
+  // Used by Cloudflare Workers Builds when the repo is connected to Git
+  "build": {
+    "command": "npx prisma generate && npx opennextjs-cloudflare build",
+    "deploy_command": "npx wrangler deploy"
+  }
+}

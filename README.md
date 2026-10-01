@@ -26,14 +26,19 @@ npx prisma db push      # creates the local SQLite database
 npm run dev             # http://localhost:3000
 ```
 
-## Deploying to Netlify
+## Deploying to Cloudflare
 
-The repo includes a `netlify.toml`, so no extra setup is needed:
+The repo is configured for Cloudflare Workers (`wrangler.jsonc` + `open-next.config.ts`), so no extra setup is needed:
 
 1. Push this repository to GitHub
-2. In Netlify, choose **Add new site → Import an existing project** and pick the repo
-3. Deploy — Netlify reads `netlify.toml` and configures the rest automatically
+2. In the Cloudflare dashboard, go to **Compute (Workers & Pages) → Create → Workers → Connect to Git** and pick the repository
+3. Confirm the build settings (they also come from `wrangler.jsonc`):
+   - **Build command:** `npx prisma generate && npx opennextjs-cloudflare build`
+   - **Deploy command:** `npx wrangler deploy`
+4. Deploy — the site goes live at `https://woodora-kitchens.<your-subdomain>.workers.dev`
+
+Every push to the connected branch rebuilds and redeploys automatically.
 
 ### A note on the contact form
 
-In local development, enquiries are stored in a SQLite database (`db/custom.db`). Netlify functions have no persistent disk, so on the live site the form still accepts submissions normally and each enquiry is written to the Netlify function log (Filtered Function Logs in the Netlify dashboard). If you want enquiries stored permanently on the live site, connect a hosted database (for example Neon or Supabase Postgres) and point `DATABASE_URL` at it.
+In local development, enquiries are stored in a SQLite database (`db/custom.db`). Cloudflare Workers have no persistent disk, so on the live site the form still accepts submissions normally and each enquiry is written to the Worker logs (open your Worker in the Cloudflare dashboard → **Logs**). If you want enquiries stored permanently on the live site, a Cloudflare D1 database can be wired in with Prisma's D1 driver adapter — ask and it can be added.
