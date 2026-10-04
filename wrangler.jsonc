@@ -16,7 +16,6 @@
   },
   // Used by Cloudflare Workers Builds when the repo is connected to Git
   "build": {
-    "command": "npx prisma generate && npx opennextjs-cloudflare build",
-    "deploy_command": "npx wrangler deploy"
+    "command": "npx prisma generate && npx opennextjs-cloudflare build"
   }
 }
